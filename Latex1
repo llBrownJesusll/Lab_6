@@ -1,0 +1,631 @@
+% JB:  Revised March 8, 2024, with additional formatting suggestions
+
+
+\documentclass[pre,preprint,aps]{revtex4-2}
+\usepackage{amssymb,amsmath}
+\usepackage{natbib,float,geometry,xkeyval,amsmath}
+\usepackage{graphicx}					% Include figure files
+\usepackage{dcolumn}					% Align table columns on decimal point
+
+\usepackage[pdftex,colorlinks=true]{hyperref}
+\usepackage{physics}		% lots of useful physics shortcuts (derivatives, matrices, ...)
+%  check it out:    https://mirrors.ibiblio.org/CTAN/macros/latex/contrib/physics/physics.pdf
+
+
+
+
+\begin{document}
+\title{Your title goes here}
+\author{Your Name Only\footnote{Lab partner: Their Name Here}}
+\affiliation{Physics Department, Simon Fraser University, Burnaby, BC, Canada}
+\date{\today}
+\maketitle
+
+
+Your report should be a document that you might give a supervisor, colleague, or instructor, to briefly describe  your data and its implications.  It is \textit{your} report.  You should acknowledge your partner, as shown on the title page.  You and your partner took the data together, but the analysis and write-up should be your own.
+
+Some key points:  Write the report as a single section, with no headings.  To order your discussion, follow the \href{https://en.wikipedia.org/wiki/IMRAD}{IMRAD }format: \underline{I}ntroduction, \underline{M}ethods, \underline{R}esults, \underline{A}nalysis, \underline{D}iscussion. (But note possible variants, discussed in the Wikipedia article.)  Here are the key components:
+
+\begin{enumerate}
+    \item You must use the \href{https://www.overleaf.com}{Overleaf} LaTeX text editor.
+    \item The tone should be formal, as in the style of a scientific paper. Pretend this is a permanent part of the company records that summarize your work.  Formal does \textit{not} mean wordy, nor should you use only the passive voice.  See this handy guide from \href{http://www2.ensc.sfu.ca/~whitmore/courses/style/templates/index.html}{SFU Eng. Sci.} for some useful tips.
+    
+    \item What will you discuss? Include a couple of sentences as an introduction/overview of the report. 
+    
+    \item What did you do?  Include a paragraph or so describing the experimental conditions, noting anything unusual or problematic.  A sketch of the apparatus is not necessary (it would be for a formal report), but describe it in words in a way that is understandable to someone who has not done this experiment.
+    
+    \item What did you observe? Briefly describe your measurements and any issues that might have affected the outcomes.
+    
+    \item Data figures:  Include two to three figures.  A figure can have as many sub-parts as you want, but it must all fit, \textit{with its caption} on a single page.  Choosing and organizing nicely the figures is part of your challenge.  Labels should be roughly the same size as caption text (too small is hard to read, too large usually looks bad).  Overall labels such as (a) and (b) are usually a little larger than axis labels.  It is ok to have the figures be at the end, since this is still a ``short report."  (Longer papers typically put the figure in the report.)
+    
+    \item Figure content, notes:  Curve fits from your analysis should be present as lines (markers for data).  Figures may (and often should) have multiple parts, but there should be a reason for grouping the subparts as one figure (for example, amplitude and phase, or various damping levels).   The caption should start with an overall title that describes the overall point of the plot.  Each sub part (a), (b), etc. should also have a title.  The titles are done in ``title format'', omitting words such as ``This is a figure showing''.  Any follow-on text, though, should use complete sentences.  The figures should be placed in the text at an appropriate place (more or less). 
+    
+    \item Table:  You might include one summarizing the important parameters you found.
+    
+    \item How did you analyze the data?  What kind of model are you fitting the data to?  State important equations as needed and provide references to them. There should be a detailed error analysis including discussion of residuals, $\chi^2$, uncertainties of fitted parameters etc.
+    
+    \item You should think carefully about which figures to include, and the answer often depends on exactly what data you have and its quality.  For example, showing residuals is useful when the model is close enough that the fit qualitatively looks good.  In that case, it can be a ``microscope" that gives a more stringent test.  But if the fit is obviously off, the residuals are not going to show you more than you can already see and are likely to just clutter the figure.  The general principle is that figures are supposed to show the reader something.  There should be a point to them.
+    
+    \item What does it mean? Briefly summarize the data and its implications.  Do the data fully support the simplified model used? If not, why?  Look for consistency between measurements, e.g., between free and forced oscillation fitting parameters. A simple table is useful for presenting this.
+    
+    \item The total length of the report should be between 1000 and 1500 words of text. You can check the length on Overleaf after compiling the LaTeX source.  (See \texttt{Menu / Word Count}.)  To get a feel for what we are looking for, see the sample brief ``On the limits of Ohm's Law,'' which is about 830 words.  This means that you will need to organize the material recorded in your notebooks and think carefully about the analysis---clearer is usually shorter.
+
+    \item AI is changing how we write and edit.  It is fine to use AI tools to improve writing.  For example, Overleaf now includes limited free AI suggestions for grammar and style.  (They hope that you will go on to buy more access.)  There are many other tools with similar capabilities, such as ChatGPT.  These can catch grammar and style errors, but do not try to use them to ``write the report for you".  The programs still ``hallucinate" a lot, leading to silly text that will be marked as such.
+
+\end{enumerate}
+
+
+\noindent \textbf{Equations:}
+
+Your report should include the important equations, such as the equation of motion and any equations that you fit data to.  For example, a general equation of motion is
+\begin{align}                                % could also use begin{equation} but align works and is shorter 
+	F = ma = m \dv[2]{x}{t} 					% uses commands from Physics package
+		= m \frac{\text{d}^2 x}{\text{d}t^2} \,,		% uses standard LaTeX commands
+\label{eq:newton}
+\end{align}
+which is referenced in the text as Eq.~\ref{eq:newton}.  In figure captions, when you show the fit to an analysis equation, such as
+\begin{align}
+	y = a x + b \,,
+\label{eq:linefit}
+\end{align}
+with $a$ and $b$ as fit parameters, you refer to the equation in the caption, too.
+
+Notice how there are commas at the end of Eqs.~\ref{eq:newton} and \ref{eq:linefit}.  Equations are part of the text and should be punctuated (usually with a comma or period).
+
+A few things to note:  The LaTeX code shows two ways to write the $\ddot{x}$ term.  The first uses the \href{https://mirrors.ibiblio.org/CTAN/macros/latex/contrib/physics/physics.pdf}{physics package} and is much simpler.  The second is with standard LaTeX commands.  Notice, as well, that the physics package automatically writes derivatives with Roman d's and not italic (math mode).  This follows an \href{https://nhigham.com/2016/01/28/typesetting-mathematics-according-to-the-iso-standard/}{ISO convention}.  For integrals, it would be
+\begin{align}
+	  v(t) = \int_0^t \dd{t'} a(t') \,.				% uses commands from Physics package
+\label{eq:velocityDef}
+\end{align}
+
+
+\noindent\textbf{Example of a figure:}
+
+\begin{figure}[htb] 
+	% [htb] is optional.  This option says, place the figure here (h) or at the top (t) of the page or at the bottom (b). 
+% FOR 2025:  Redo this as a Python figure, without legend and maybe include code somewhere for students to use as a model.
+	\centering
+	\includegraphics[width=4.0in]{linearFit.pdf}   
+	\caption{Variation of some physical quantity $y$ with another physical quantity $x$.  The red markers represent data, and the blue line is a least-squares curve fit to Eq.~\ref{eq:linefit}, with slope $a$ = 1.01 $\pm$ 0.05 and y-intercept $b = -1.29$ $\pm$ 0.28, with a $\chi^2$ of 12 for $\nu = 9$ degrees of freedom.}
+	\label{fig:linearFit}
+\end{figure}
+Note that the caption to a figure just describes to the Reader what is being shown.  Put the discussion of it in the text, as I am doing here.  For the curve fit, the result is consistent with a good fit.  Because the error bars are 1-$\sigma$ deviations, one expects that about a third of the error bars will miss the fit curve.  Here, there are three misses and two marginal hits---roughly what one expects for random error with a correct fitting function.  The actual slope and intercept used to generate the data were 1 and 0.5, respectively. Note, for $\nu \gg 1$, that $\chi^2$ should follow a nearly Gaussian distribution, with mean $\nu$ and standard deviation $2\nu$.  That is, for $\nu=8$, we expect $\chi^2 = 8 \pm 4$.  The value found is within this range.  If it were smaller, the data errors may be overestimated.  If it is larger, either the model is bad (obvious pattern in residuals) or the data errors could be underestimated.
+
+\noindent \textbf{A note on fit quality}.  Many problems in fit quality trace to fitting over too large a range of the data.  It is common to find that a model fits a portion of the data (with luck, the ``most important" portion) but does not fit all the data.  In such a case, it is better to get a good fit to the important part of the data than a poor fit to all the data.  Of course, if you exclude a portion of the data, you should have (or at least try to find) an explanation as to WHY that part of the data is bad.  Perhaps other physics not in your model becomes more important in certain data ranges.  
+
+Also, you should indicate the range of the fit.  For example, you could just show the fit curve over the fit range.  Still, it is often instructive to extrapolate beyond that range.  In that case, you might change the line from solid to dashed in the extrapolation region.  One way to do this is to overlay two fit curves:  A solid one over the fit range and a dashed one over the entire extrapolated range.  If the lines have the same colour and thickness, their overlay will look like a single curve that changes from solid to dashed at the right places.
+
+
+Finally, most figures these days are multipart figures, composed of several items.  Here, we show the simplest kind, which just repeats Fig.~\ref{fig:linearFit}.  Note that Fig.~\ref{fig:linearFitMulti} should be adapted to your particular case.  Obviously, this includes the number of rows and columns, but also which axes to show and label.  Here, I did not repeat some of the labels because they would repeat each other and become visually distracting.  Note that the original Jupyter notebook for both figures is in the Overleaf directory, (linearFit.ipynb).  In this particular figure, because some of the axis ranges are identical, I turned off the labels.  This is again nice visually; however, it is essential that you make the size and range of each graph identical.  That way, the reader knows intuitively the value of each tick on the unlabeled axis.
+
+\begin{figure}[htb] 
+	\centering
+	\includegraphics[width=5.5in]{linearFitMulti.pdf}   
+	\caption{Multi-figure example. Each sub-figure should be described. Make sure the label sizes are not smaller than the caption size.  (a) First plot. (b) Second plot. (c) Third plot. (d) Fourth plot.}
+	\label{fig:linearFitMulti}
+\end{figure}
+
+\vspace{4em}
+
+\noindent \textbf{Tables:}
+
+A general style rule is that data that can be plotted in a sensible way should be plotted.  So there is no point to having a table giving the data that is used in a plot.  (Some journals ask for csv files in case someone wants to use the data for their own quantitative analysis, but we will not do that here.) 
+
+On the other hand, there are times when highlighting and comparing numbers are important.  For example, when you extract natural frequencies and damping rates and $Q$ values, these are important parts of your results.  For such cases, a table is often the best way.  In addition, having too many parameters in a figure caption makes it hard to read.  In such cases, a table is better.  Below is an example (see the source code for how this is done in LaTeX).
+
+\begin{table}[ht]
+  \begin{center}
+    \begin{tabular}{ r|c|c|c } % r=right, c=center, l=left
+                   % one letter should be input for each column
+                   % { r|c|c } puts vertical lines between columns
+%        \hline \hline
+            Condition name~ & Par 1 [units]    &  Par 2 [units]     &  Par 3 [units]       \\ \hline \hline
+        Type 1~  & $2400 \pm 500$  &     $110 \pm 2$ & $47 \pm 3$                 \\ \hline
+         Type 2~ & $22.1 \pm 0.2$     &  $14.22 \pm 0.02$  & 1.0003(2)             \\ 
+%         \hline \hline
+    \end{tabular}
+    \end{center}
+\caption{Best-fit parameter values for xxxx.}
+\label{table:sample}
+\end{table}
+
+In the text, you would refer to Table~\ref{table:sample}.  Notice I use two different conventions for indicating uncertainty.  The bottom right entry is another way of describing $1.0003 \pm 0.0002$.  This notation is handy when you have small values of uncertainty (lots of significant digits, with an uncertainty only in the value of the last digit).  If you use this convention, explain it at least the first time, in the caption.
+
+\vspace{4em}
+
+\textbf{Common issues and matters of style:}
+
+\begin{enumerate}
+    \item The title must describe the system under investigation (i.e., not ``Technical report first draft'')
+    \item Avoid long run-on sentences. Avoid overly complicated sentences. Try to imagine that you are reading the text as an outsider for the first time.
+    \item Avoid vague, overly general statements.  Can you omit a sentence or a phrase without altering the overall information conveyed to the reader?
+    \item Think carefully about possible sources of disagreement with theory. Try to be specific. For example, can you comment on deviations from Hooke's law? Can you see any evidence that the damping force is not proportional to velocity? Can you see evidence from transient decays that the frequency is amplitude dependent (a nonlinear effect)?
+    \item Even if $\chi^2>\nu$ ($\nu = $ number of degrees of freedom), your data might still be good. Perhaps your model assumptions are wrong, or at least not entirely correct. Can you see differences in the $\chi^2$ for different measurements? Does this tell you anything? 
+    \item When plotting the fitted theory graphs, use a finer spacing for the frequency axis than the one used for the data. Use \texttt{np.linspace} or \texttt{np.arange} with enough points that the theory curve appears smooth.
+    \item No ``computerese.''  This refers to numerical output automatically generated by a program, for example 1.4E-6, rather than proper scientific notation. The correct formatting is $1.4\times10^{-6}$ (see LaTeX code).  And remember to use the appropriate number of significant digits (determined by the uncertainty estimates)!
+    \item No titles for figures since you already have a figure caption.
+    \item Plot in units that have physical significance.  For the resonance graphs and time transients, convert voltage units to acceleration units.  Remember to remove voltage offsets and just give the amplitude (0 to peak).
+    \item Units should be in text (Roman) font.  Use a space between the number and the unit.  In LaTeX, a tilde, $\sim$, prevents a line break between number and unit.  As examples,  the acceleration due to gravity is 9.81~m/s$^2$, or time $t=2$ s.
+    \item Variables with subscript descriptions should use Roman font. The ``official" LaTeX way is $V_\mathrm{word}$.  An older, shorter way is $V_{\rm word}$.
+    \item For the resonance and phase-shift curves, the error bars should be obtained from the curve fits to the forced oscillations.
+    \item Please be careful about error bars. If they are too small to see, state this in the text or caption.  Adding caps (capsize=xx in an errorbar plot in Python) can increase the visibility of error bars.
+    \item For figures, use a pdf file, \textit{not} png.  The latter is bitmapped and does not look good when magnified.  (See linearFit.ipynb for an example of how to generate the pdf file.)  
+    \item Label axes, with units.
+    %\item Add a legend if more than one curve is plotted (or put labels next to curves).
+    \item There are times when plotting a subrange of data makes sense, e.g. to show details better, to compare with other conditions, etc.
+    \item Include proper references, such as this~\cite{einstein1907} or this~\cite{cardona2005}.
+    \item Make sure to refer to each and every reference at least once in the text~\cite{Kittel2004}.
+    \item Avoid starting a sentence with an abbreviation (too many periods makes it hard to read).  Inside a sentence, we would write Eq.~\ref{eq:velocityDef}.  At the beginning of the sentence, we would write it as follows:  Equation~\ref{eq:velocityDef} states....
+\end{enumerate}
+
+
+
+\begin{thebibliography}{99}   % references have to go in the order they are cited in the paper
+
+	\bibitem{einstein1907} A. Einstein, ``Die Plancksche Theorie der Strahlung und die Theorie der spezifischen W\"arme,'' \textit{Annalen der Physik} \textbf{4}, 180--190 (1907). For an English translation of the paper see \url{https://einsteinpapers.press.princeton.edu/vol2-trans/228}.
+	%The {Einstein} part is a handle by which you can cite the reference using \cite{ohm}
+
+	\bibitem{cardona2005} M. Cardona, ``{A}lbert {E}instein as the father of solid state physics'', \href{https://arxiv.org/abs/physics/0508237}{arXiv:physics/0508237} (2005).  
+    
+    \bibitem{Kittel2004} C. Kittel, \textit{Solid State Physics}, 8th ed., Wiley Press (2004);  Ch. 5.  % 
+	
+\end{thebibliography}
+
+\subsection{Resonance Curves}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{Plots/Max_Damping_amplitude_ratio_fit.png}
+    \caption{\textbf{Amplitude Ratio vs Frequency (Max Damping).} 
+    This figure shows the amplitude ratio as a function of frequency for the mechanical resonance system with maximum damping. 
+    Data points are represented by markers, and the fitted curve is shown as a solid line. 
+    The fit parameters are 
+    $A_{\text{fit}} = 0.0109 \pm 0.0001$, 
+    $f_{0,\text{fit}} = 12.321 \pm 0.006 \,\text{Hz}$, 
+    $\gamma_{\text{Hz}} = 0.990 \pm 0.008 \,\text{Hz}$, 
+    and $Q_{\text{amp}} = 6.222$. 
+    Error bars indicate measurement uncertainty.}
+    \label{fig:ampRatio_max_damping}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{Plots/Max_Damping_phase_fit.png}
+    \caption{\textbf{Phase Difference vs Frequency (Max Damping).} 
+    This figure displays the phase difference between the driving force and the system’s response as a function of frequency with maximum damping. 
+    Data points are marked, and the fitted model is represented by a line. 
+    The fit parameters are 
+    $\omega_0 = 77.948 \pm 0.276 \,\text{rad/s}$ ($f_0 = 12.406 \,\text{Hz}$), 
+    $\gamma = 5.911 \pm 0.253 \,\text{rad/s}$ ($\gamma_{\text{Hz}} = 0.941 \,\text{Hz}$), 
+    $\phi_{\text{offset}} = -3.446 \pm 0.024 \,\text{rad}$, 
+    and $Q_{\text{phase}} = 6.593$. 
+    Error bars are included where applicable.}
+    \label{fig:phaseDiff_max_damping}
+\end{figure}
+
+\subsection{Transient Decay Measurements}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Max Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Max Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 1.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 1.168 \pm 0.14$, 
+    $\gamma = 57.2 \pm 8$, 
+    $\omega = 113.4 \pm 3\,\text{rad/s}$ ($f_0 = 18.05\,\text{Hz}$), 
+    $\phi = 0.4125 \pm 0.068$, 
+    offset $= 0.8346 \pm 0.02$, 
+    $f_{\text{res}} = 101.07\,\text{Hz}$ ($f_{\text{res}}/f_0 = 5.60$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -3.309 \pm 1.1$, 
+    $\gamma = 30.43 \pm 3.9$, 
+    $\omega = 105 \pm 9.1\,\text{rad/s}$ ($f_0 = 16.71\,\text{Hz}$), 
+    $\phi = 15.94 \pm 0.6$, 
+    offset $= 1.624 \pm 0.036$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 7.26$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.5937 \pm 0.04$, 
+    $\gamma = 0.9769 \pm 0.44$, 
+    $\omega = 75.07 \pm 0.53\,\text{rad/s}$ ($f_0 = 11.95\,\text{Hz}$), 
+    $\phi = -0.8807 \pm 0.079$, 
+    offset $= 1.473 \pm 0.005$, 
+    $f_{\text{res}} = 111.20\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.31$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 2.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -0.7043 \pm 0.072$, 
+    $\gamma = 35.66 \pm 7.7$, 
+    $\omega = 95.77 \pm 3.8\,\text{rad/s}$ ($f_0 = 15.24\,\text{Hz}$), 
+    $\phi = 1.053 \pm 0.15$, 
+    offset $= 1.688 \pm 0.03$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 7.96$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.2058 \pm 0.033$, 
+    $\gamma = 7.376 \times 10^{-12} \pm 2.3$, 
+    $\omega = 116.8 \pm 5.6\,\text{rad/s}$ ($f_0 = 18.58\,\text{Hz}$), 
+    $\phi = -4.236 \pm 0.43$, 
+    offset $= 1.307 \pm 0.012$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 6.53$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.506 \pm 0.015$, 
+    $\gamma = 5.499 \pm 0.21$, 
+    $\omega = 76.69 \pm 0.21\,\text{rad/s}$ ($f_0 = 12.21\,\text{Hz}$), 
+    $\phi = -1.219 \pm 0.03$, 
+    offset $= 1.467 \pm 0.00092$, 
+    $f_{\text{res}} = 111.20\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.11$).
+\end{itemize}
+
+\paragraph{Trial 3}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial3.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial3_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial3.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial3_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 3.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial3}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 3):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 1.732 \pm 0.42$, 
+    $\gamma = 50.92 \pm 8.3$, 
+    $\omega = 69.78 \pm 7.4\,\text{rad/s}$ ($f_0 = 11.11\,\text{Hz}$), 
+    $\phi = 0.3301 \pm 0.055$, 
+    offset $= 1.128 \pm 0.073$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.92$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.83 \pm 0.27$, 
+    $\gamma = 9.7 \pm 5.4$, 
+    $\omega = 68.25 \pm 3.1\,\text{rad/s}$ ($f_0 = 10.86\,\text{Hz}$), 
+    $\phi = 1.566 \pm 0.34$, 
+    offset $= 1.461 \pm 0.057$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.17$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.4808 \pm 0.016$, 
+    $\gamma = 4.687 \pm 0.23$, 
+    $\omega = 76.58 \pm 0.14\,\text{rad/s}$ ($f_0 = 12.19\,\text{Hz}$), 
+    $\phi = 0.9519 \pm 0.021$, 
+    offset $= 1.463 \pm 0.00092$, 
+    $f_{\text{res}} = 121.31\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.95$).
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Moderate Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Moderate Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 1.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -0.01334 \pm 0.00038$, 
+    $\gamma = 26 \pm 1.3$, 
+    $\omega = 140 \pm 1.5\,\text{rad/s}$ ($f_0 = 22.28\,\text{Hz}$), 
+    $\phi = -1.141 \pm 0.029$, 
+    offset $= 1.499 \pm 9.8\times 10^{-5}$, 
+    $f_{\text{res}} = 40.41\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.81$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.066 \pm 0.047$, 
+    $\gamma = 4.565 \times 10^{-15} \pm 9.2$, 
+    $\omega = 110.2 \pm 4.2\,\text{rad/s}$ ($f_0 = 17.53\,\text{Hz}$), 
+    $\phi = -2.282 \pm 0.27$, 
+    offset $= 1.541 \pm 0.007$, 
+    $f_{\text{res}} = 141.43\,\text{Hz}$ ($f_{\text{res}}/f_0 = 8.07$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.5887 \pm 0.031$, 
+    $\gamma = 5.037 \times 10^{-28} \pm 0.35$, 
+    $\omega = 76.42 \pm 0.49\,\text{rad/s}$ ($f_0 = 12.16\,\text{Hz}$), 
+    $\phi = -0.9003 \pm 0.074$, 
+    offset $= 1.371 \pm 0.005$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.97$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 2.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -1.028 \pm 0.045$, 
+    $\gamma = 9.013 \times 10^{-18} \pm 1.4$, 
+    $\omega = 70.14 \pm 3.1\,\text{rad/s}$ ($f_0 = 11.16\,\text{Hz}$), 
+    $\phi = -0.5486 \pm 0.1$, 
+    offset $= 1.625 \pm 0.079$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.86$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -1.02 \pm 0.069$, 
+    $\gamma = 2.983 \pm 0.57$, 
+    $\omega = 76.78 \pm 1.6\,\text{rad/s}$ ($f_0 = 12.22\,\text{Hz}$), 
+    $\phi = -0.802 \pm 0.11$, 
+    offset $= 1.484 \pm 0.027$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.92$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.9213 \pm 0.0038$, 
+    $\gamma = 1.537 \pm 0.028$, 
+    $\omega = 76.06 \pm 0.043\,\text{rad/s}$ ($f_0 = 12.11\,\text{Hz}$), 
+    $\phi = -0.724 \pm 0.0064$, 
+    offset $= 1.481 \pm 0.00053$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.01$).
+\end{itemize}
+
+\paragraph{Trial 3}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial3.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial3_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial3.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial3_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 3.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial3}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 3):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -1.312 \pm 0.079$, 
+    $\gamma = 11.16 \pm 0.98$, 
+    $\omega = 68.09 \pm 1.8\,\text{rad/s}$ ($f_0 = 10.84\,\text{Hz}$), 
+    $\phi = 0.2458 \pm 0.018$, 
+    offset $= 1.714 \pm 0.045$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.19$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -0.746 \pm 0.089$, 
+    $\gamma = 8.688 \times 10^{-13} \pm 1.5$, 
+    $\omega = 76.25 \pm 0.59\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = 0.2475 \pm 0.027$, 
+    offset $= 1.508 \pm 0.023$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.99$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.8553 \pm 0.0036$, 
+    $\gamma = 1.628 \pm 0.028$, 
+    $\omega = 76.18 \pm 0.033\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = 0.2243 \pm 0.005$, 
+    offset $= 1.481 \pm 0.00041$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.00$).
+\end{itemize}
+
+\paragraph{Trial 4}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial4.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial4_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial4.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial4_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 4.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial4}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 4):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 0.6115 \pm 0.0079$, 
+    $\gamma = 1.069 \times 10^{-11} \pm 1.5$, 
+    $\omega = 77.9 \pm 1.8\,\text{rad/s}$ ($f_0 = 12.4\,\text{Hz}$), 
+    $\phi = -1.064 \pm 0.071$, 
+    offset $= 1.478 \pm 0.027$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.7774$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 1.068 \pm 0.075$, 
+    $\gamma = 4.622 \pm 0.49$, 
+    $\omega = 64.07 \pm 2.5\,\text{rad/s}$ ($f_0 = 10.2\,\text{Hz}$), 
+    $\phi = -0.153 \pm 0.18$, 
+    offset $= 1.671 \pm 0.048$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.8883$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.6387 \pm 0.0044$, 
+    $\gamma = 1.551 \pm 0.045$, 
+    $\omega = 76.25 \pm 0.054\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = -1.031 \pm 0.008$, 
+    offset $= 1.482 \pm 0.0005$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.9893$).
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Min Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Min Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MinDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:min_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MinDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:min_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Min Damping: Trial 1.} Transient decay measurements with minimum damping over $0.0\,\text{s}$ to $34.9950\,\text{s}$ (7000 data points).}
+    \label{fig:min_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Min Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 2.0]\,\text{s}$: 
+    $A = -0.1177 \pm 0.12$, 
+    $\gamma = 1.089 \times 10^{-20} \pm 0.87$, 
+    $\omega = 88.45 \pm 0.87\,\text{rad/s}$ ($f_0 = 14.08\,\text{Hz}$), 
+    $\phi = 0.1434 \pm 1$, 
+    offset $= 1.514 \pm 0.042$, 
+    $f_{\text{res}} = 11.97\,\text{Hz}$ ($f_{\text{res}}/f_0 = 0.85$).
+    
+    \item \textbf{Slice 2 (Teal)} $[2.0, 5.0]\,\text{s}$: 
+    $A = -1.933 \pm 0.0031$, 
+    $\gamma = 0.1438 \pm 0.00047$, 
+    $\omega = 76.17 \pm 0.00047\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = -1.843 \pm 0.0016$, 
+    offset $= 1.503 \pm 0.00034$, 
+    $f_{\text{res}} = 24.29\,\text{Hz}$ ($f_{\text{res}}/f_0 = 2.00$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[5.0, 10.0]\,\text{s}$: 
+    $A = 1.968 \pm 0.006$, 
+    $\gamma = 0.1481 \pm 0.00043$, 
+    $\omega = 76.24 \pm 0.00043\,\text{rad/s}$ ($f_0 = 12.13\,\text{Hz}$), 
+    $\phi = -5.331 \pm 0.003$, 
+    offset $= 1.505 \pm 0.00028$, 
+    $f_{\text{res}} = 12.39\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.02$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MinDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:min_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MinDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:min_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Min Damping: Trial 2.} Transient decay measurements with minimum damping over $0.0\,\text{s}$ to $34.9950\,\text{s}$ (7000 data points).}
+    \label{fig:min_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Min Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 2.0]\,\text{s}$: 
+    $A = 0.9581 \pm 0.045$, 
+    $\gamma = 4.191 \times 10^{-35} \pm 0.041$, 
+    $\omega = 76.18 \pm 0.04\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = -0.7051 \pm 0.047$, 
+    offset $= 1.5 \pm 0.016$, 
+    $f_{\text{res}} = 12.47\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.03$).
+    
+    \item \textbf{Slice 2 (Teal)} $[2.0, 5.0]\,\text{s}$: 
+    $A = 1.388 \pm 0.002$, 
+    $\gamma = 0.1459 \pm 0.00042$, 
+    $\omega = 76.21 \pm 0.00042\,\text{rad/s}$ ($f_0 = 12.13\,\text{Hz}$), 
+    $\phi = -0.7767 \pm 0.0014$, 
+    offset $= 1.504 \pm 0.00021$, 
+    $f_{\text{res}} = 24.29\,\text{Hz}$ ($f_{\text{res}}/f_0 = 2.00$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[5.0, 10.0]\,\text{s}$: 
+    $A = -1.37 \pm 0.0043$, 
+    $\gamma = 0.1442 \pm 0.00045$, 
+    $\omega = 76.28 \pm 0.00045\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = -4.297 \pm 0.0032$, 
+    offset $= 1.505 \pm 0.00021$, 
+    $f_{\text{res}} = 12.39\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.02$).
+\end{itemize}
+
+\end{document}

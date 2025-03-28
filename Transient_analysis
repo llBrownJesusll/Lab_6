@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import glob
+from scipy.optimize import curve_fit
+
+###############################################################################
+# Global list to hold deleted titles from plots
+###############################################################################
+deleted_titles = []
+
+###############################################################################
+# 1) Model Functions
+###############################################################################
+def damped_sine_func(t, A, gamma, omega, phi, offset):
+    """
+    Model for a damped sinusoid:
+      V(t) = A * exp(-gamma * t) * sin(omega * t + phi) + offset
+    """
+    return A * np.exp(-gamma * t) * np.sin(omega * t + phi) + offset
+
+def estimate_freq_from_residuals(t, residuals):
+    """
+    Estimate the dominant frequency in the residuals using an FFT approach.
+    Returns the frequency (Hz) with the largest spectral amplitude.
+    """
+    dt = np.median(np.diff(t))
+    N = len(residuals)
+    # Compute FFT of the residuals
+    fft_vals = np.fft.rfft(residuals)
+    fft_freqs = np.fft.rfftfreq(N, d=dt)
+    
+    # Zero out the DC component so we don't pick zero frequency as the "peak"
+    fft_vals[0] = 0.0
+    peak_index = np.argmax(np.abs(fft_vals))
+    peak_freq = fft_freqs[peak_index]
+    return peak_freq
+
+###############################################################################
+# 2) Fitting a Sliced Range of the Transient
+###############################################################################
+def fit_damped_sine_in_range(t, V, t_min, t_max, p0=None, label=""):
+    """
+    Restrict data to the time interval [t_min, t_max], then fit with a damped sine.
+    Returns (popt, pcov, residuals, freq_resid).
+
+    p0: initial guess [A, gamma, omega, phi, offset].
+    """
+    # Slice the data
+    mask = (t >= t_min) & (t <= t_max)
+    t_slice = t[mask]
+    V_slice = V[mask]
+
+    if len(t_slice) < 5:
+        print(f"[{label}] Not enough data points in t=[{t_min},{t_max}] for fitting.")
+        return None, None, None, None
+
+    # --- Modification: Constrain gamma to be non-negative ---
+    try:
+        popt, pcov = curve_fit(
+            damped_sine_func, t_slice, V_slice, p0=p0,
+            bounds=([-np.inf, 0, -np.inf, -np.inf, -np.inf],
+                    [np.inf, np.inf, np.inf, np.inf, np.inf])
+        )
+    except Exception as e:
+        print(f"[{label}] Fit failed in range t=[{t_min},{t_max}]: {e}")
+        return None, None, None, None
+
+    # Evaluate fit + residuals
+    V_fit = damped_sine_func(t_slice, *popt)
+    residuals = V_slice - V_fit
+
+    # Estimate frequency in the residual
+    freq_resid = estimate_freq_from_residuals(t_slice, residuals)
+
+    return popt, pcov, residuals, freq_resid
+
+###############################################################################
+# 3) Analyze One Transient File with Multiple Time Slices
+###############################################################################
+def analyze_transient_file_slices(
+    file_path, 
+    base_freq_guess, 
+    slices, 
+    label="MaxDamping", 
+    subsample_factor=50
+):
+    """
+    1) Load a single transient .lvm file.
+    2) For each specified time slice in `slices` (list of (t_min, t_max)),
+       fit a damped sine and store/print the results.
+    3) Compare how the parameters vary between slices.
+    4) Plot amplitude (data+fit) and residuals for all slices in separate figures.
+    
+    base_freq_guess is in Hz (used for initial guess of omega = 2π * base_freq_guess).
+    """
+    # -----------------------
+    # Load Data
+    # -----------------------
+    try:
+        data = np.loadtxt(file_path, delimiter=",")
+    except Exception as e:
+        print(f"[{label}] Error reading {file_path}: {e}")
+        return
+    
+    # Assume time in column 0, V_acc in column 1
+    t = data[:, 0]
+    V_acc = data[:, 1]
+    
+    # Build a default initial guess for the full dataset
+    A_guess = (np.max(V_acc) - np.min(V_acc)) / 2
+    offset_guess = np.mean(V_acc)
+    gamma_guess = 0.1         # rough guess
+    omega_guess = 2 * np.pi * base_freq_guess
+    phi_guess = 0.0
+    p0 = [A_guess, gamma_guess, omega_guess, phi_guess, offset_guess]
+
+    print(f"\n=== Analyzing file: {os.path.basename(file_path)} ({label}) ===")
+    print(f"   Data length: {len(t)} points, time range: {t[0]:.4f} s to {t[-1]:.4f} s")
+
+    # -----------------------
+    # Prepare separate figures for amplitude and residual plots
+    # -----------------------
+    cmap = plt.get_cmap('viridis', len(slices))
+    fig_amp, ax_amp = plt.subplots(figsize=(8, 6))
+    fig_res, ax_res = plt.subplots(figsize=(8, 6))
+
+    all_results = []
+    for i, (t_min, t_max) in enumerate(slices):
+        slice_label = f"{label}_slice{i+1}"
+        title_str = f"{slice_label}: t=[{t_min:.3f}, {t_max:.3f}] s"
+        # Save the title (deleted from the plot)
+        deleted_titles.append(title_str)
+        
+        print(f"\nFitting range t = [{t_min:.3f}, {t_max:.3f}] s ...")
+
+        popt, pcov, residuals, freq_resid = fit_damped_sine_in_range(
+            t, V_acc, t_min, t_max, p0=p0, label=slice_label
+        )
+        if popt is None:
+            continue
+
+        # Unpack fit parameters
+        A_fit, gamma_fit, omega_fit, phi_fit, offset_fit = popt
+        freq_fit = omega_fit / (2*np.pi)
+        freq_ratio = freq_resid / freq_fit if freq_fit != 0 else 0.0
+        perr = np.sqrt(np.diag(pcov)) if pcov is not None else [0]*5
+
+        # Output fit details to terminal
+        print(f"  {slice_label} fit parameters:")
+        print(f"    A     = {A_fit:.4g} ± {perr[0]:.2g}")
+        print(f"    gamma = {gamma_fit:.4g} ± {perr[1]:.2g}")
+        print(f"    omega = {omega_fit:.4g} ± {perr[2]:.2g} rad/s -> f0 = {freq_fit:.4g} Hz")
+        print(f"    phi   = {phi_fit:.4g} ± {perr[3]:.2g}")
+        print(f"    offset= {offset_fit:.4g} ± {perr[4]:.2g}")
+        print(f"    Residual freq = {freq_resid:.4f} Hz (ratio f_res/f0 = {freq_ratio:.4f})")
+
+        # Store the result
+        result_dict = {
+            'slice_label': slice_label,
+            't_min': t_min,
+            't_max': t_max,
+            'popt': popt,
+            'pcov': pcov,
+            'freq_resid': freq_resid,
+            'freq_ratio': freq_ratio,
+        }
+        all_results.append(result_dict)
+
+        # Prepare data for plotting for this slice
+        mask = (t >= t_min) & (t <= t_max)
+        t_slice = t[mask]
+        V_slice = V_acc[mask]
+        V_fit_slice = damped_sine_func(t_slice, *popt)
+        resid_slice = V_slice - V_fit_slice
+
+        # Subsample for plotting
+        subsample_idx = np.arange(0, len(t_slice), subsample_factor)
+        t_sub = t_slice[subsample_idx]
+        V_sub = V_slice[subsample_idx]
+        resid_sub = resid_slice[subsample_idx]
+
+        color = cmap(i)
+        # Plot amplitude: data and fit
+        ax_amp.plot(t_sub, V_sub, 'o', color=color, markersize=5)
+        ax_amp.plot(t_slice, V_fit_slice, '-', color=color, linewidth=1.5)
+        # Plot residuals
+        ax_res.plot(t_sub, resid_sub, '.', color=color)
+
+    # Finalize amplitude figure (no labels, legends, or grid)
+    fig_amp.tight_layout()
+    # Finalize residual figure (no labels, legends, or grid)
+    fig_res.tight_layout()
+    
+    save_dir = "/Users/test1/Desktop/Python/Lab 6/Plots"
+    os.makedirs(save_dir, exist_ok=True)
+    outname_amp = f"Amplitude_{os.path.basename(file_path).replace('.lvm','')}.png"
+    outpath_amp = os.path.join(save_dir, outname_amp)
+    fig_amp.savefig(outpath_amp)
+    print(f"\n  Amplitude plot saved to: {outpath_amp}")
+
+    outname_res = f"Residual_{os.path.basename(file_path).replace('.lvm','')}.png"
+    outpath_res = os.path.join(save_dir, outname_res)
+    fig_res.savefig(outpath_res)
+    print(f"  Residual plot saved to: {outpath_res}")
+
+    plt.show()
+    return all_results
+
+###############################################################################
+# 4) Main: Analyze All Three Damping Levels
+###############################################################################
+def main():
+    """
+    Updated script:
+      - Three directories: Max, Moderate, Min damping
+      - Each directory has multiple .lvm files, e.g.:
+         MaxDamping_Trial1.lvm, etc.
+      - We now define different slicing intervals and subsampling factors
+        for each damping condition to avoid sparse data in MinDamping.
+      - Captions/labels are removed from plots and printed to the terminal instead.
+      - Amplitude and residual plots are saved as separate figures.
+    """
+
+    # Directories for each damping level (Update if needed)
+    data_dirs = [
+        ("/Users/test1/Desktop/Python/Lab 6/Data/Transients/MaxDamping (Samples-70k,Rate-43k)", "MaxDamping"),
+        ("Data/Transients/ModerateDamping (Samples-43k,Rate-70k)", "ModerateDamping"),
+        ("Data/Transients/MinDamping (Samples-7k, Rate-200)", "MinDamping")
+    ]
+
+    # Base frequency guess (Hz)
+    base_freq_guess = 12.0
+
+    # Different time slices for each damping label
+    slices_dict = {
+        "MaxDamping": [
+            (0.00, 0.05),
+            (0.05, 0.10),
+            (0.10, 0.20),
+        ],
+        "ModerateDamping": [
+            (0.00, 0.05),
+            (0.05, 0.10),
+            (0.10, 0.20),
+        ],
+        "MinDamping": [
+            (0.00, 2.00),   # e.g. first 2 seconds
+            (2.00, 5.00),   # next 3 seconds
+            (5.00, 10.00),  # next 5 seconds
+        ]
+    }
+
+    # Different subsampling factors for plotting
+    subsample_factors = {
+        "MaxDamping": 50,
+        "ModerateDamping": 50,
+        "MinDamping": 5
+    }
+
+    # Loop over each damping directory
+    for (dpath, dlabel) in data_dirs:
+        if not os.path.isdir(dpath):
+            print(f"\n*** Directory not found: {dpath}. Skipping. ***\n")
+            continue
+
+        # Grab all .lvm files for this damping condition
+        pattern = os.path.join(dpath, f"{dlabel}_Trial*.lvm")
+        file_list = sorted(glob.glob(pattern))
+        if not file_list:
+            print(f"No files found matching {pattern}")
+            continue
+
+        print(f"\n=== Analyzing {dlabel} ===")
+
+        these_slices = slices_dict.get(dlabel, [(0, 0.05)])
+        subsample_factor = subsample_factors.get(dlabel, 50)
+
+        for file_path in file_list:
+            analyze_transient_file_slices(
+                file_path=file_path,
+                base_freq_guess=base_freq_guess,
+                slices=these_slices,
+                label=dlabel,
+                subsample_factor=subsample_factor
+            )
+
+if __name__ == "__main__":
+    main()

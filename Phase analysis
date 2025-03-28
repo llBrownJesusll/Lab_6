@@ -1,0 +1,372 @@
+#!/usr/bin/env python3
+"""
+Script to:
+1) Load a single damping dataset (all .lvm files in a folder).
+2) Fit and plot the amplitude ratio vs frequency and phase difference vs frequency.
+3) Estimate parameter uncertainties from the curve-fit covariance matrices.
+4) Produce linear plots with normalized residuals.
+5) Optionally show acceleration amplitude vs frequency (time-domain fit results).
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+import glob
+import os
+from scipy.optimize import curve_fit
+
+# -----------------------------
+# Define fit functions
+# -----------------------------
+def phase_fit_omega(omega, omega0, gamma, phi_offset):
+    """
+    Phase fit function in terms of angular frequency omega.
+    This form assumes a driven damped harmonic oscillator:
+      phi(omega) = pi - arctan( (2*gamma*omega) / (omega0^2 - omega^2) ) + phi_offset
+    """
+    return -np.arctan2(2 * gamma * omega, omega0**2 - omega**2) + phi_offset
+
+def amp_ratio_fit(f, A, f0, gamma_hz):
+    """
+    Amplitude ratio fit function in terms of linear frequency f (Hz).
+    R(f) = A * (f^2) / sqrt((f0^2 - f^2)**2 + 4*(gamma_hz**2)*(f**2)).
+    """
+    return A * (f**2) / np.sqrt((f0**2 - f**2)**2 + 4*(gamma_hz**2)*(f**2))
+
+def sine_fit_func(t, A, phi, offset, f):
+    """
+    Basic sine function for time-domain fits of V_acc and V_in:
+      V(t) = A * sin(2π f t + phi) + offset
+    """
+    return A * np.sin(2 * np.pi * f * t + phi) + offset
+
+def hz_to_rad(f):
+    """Convert frequency in Hz to angular frequency in rad/s."""
+    return 2 * np.pi * f
+
+def analyze_dataset(data_dir, label="Single Damping"):
+    """
+    1) Loads .lvm files from data_dir matching LAB_6Vacc_Vin_<freq>hz.lvm.
+    2) Extracts amplitude ratio and phase difference for each frequency.
+    3) Fits amplitude ratio vs frequency and phase vs frequency.
+    4) Plots results + normalized residuals.
+    """
+    # Directory for saving plots
+    save_dir = "/Users/test1/Desktop/Python/Lab 6/Plots"
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Pattern for your .lvm files
+    file_pattern = os.path.join(data_dir, 'LAB_6Vacc_Vin_*hz.lvm')
+    file_list = sorted(glob.glob(file_pattern))
+
+    freqs_meas = []
+    phases_meas = []
+    amplitude_ratios = []
+    a_acc_vals = []  # Acceleration amplitude from V_acc fit
+    a_in_vals  = []  # Input amplitude from V_in fit
+    phase_err_list = []    # Uncertainty for phase difference
+    ratio_err_list = []    # Uncertainty for amplitude ratio
+
+    # -----------------------------
+    # Load and fit each .lvm file
+    # -----------------------------
+    for file_name in file_list:
+        base = os.path.basename(file_name)
+        freq_str = base.replace('LAB_6Vacc_Vin_', '').replace('hz.lvm', '')
+        try:
+            drive_freq = float(freq_str)  # in Hz
+        except ValueError as ve:
+            print(f"[{label}] Could not parse frequency from {base}: {ve}")
+            continue
+
+        try:
+            data = np.loadtxt(file_name, delimiter=',')
+        except Exception as e:
+            print(f"[{label}] Error loading {file_name}: {e}")
+            continue
+
+        if data.shape[1] < 3:
+            print(f"[{label}] File {file_name} does not have enough columns. Skipping.")
+            continue
+
+        t     = data[:, 0]
+        V_acc = data[:, 1]
+        V_in  = data[:, 2]
+
+        # Initial guesses for time-domain sine fits
+        p0_acc = [(np.max(V_acc) - np.min(V_acc)) / 2, 0, np.mean(V_acc)]
+        p0_in  = [(np.max(V_in) - np.min(V_in)) / 2,  0, np.mean(V_in)]
+
+        # Fit V_acc
+        try:
+            popt_acc, cov_acc = curve_fit(
+                lambda tt, A, phi, offset: sine_fit_func(tt, A, phi, offset, drive_freq),
+                t, V_acc, p0=p0_acc,
+                bounds=([0, -np.pi, -np.inf], [np.inf, np.pi, np.inf])
+            )
+        except Exception as e:
+            print(f"[{label}] Fit failed for V_acc in {base}: {e}")
+            continue
+        A_acc, phi_acc, offset_acc = popt_acc
+        sigma_acc = np.sqrt(np.diag(cov_acc))
+
+        # Fit V_in
+        try:
+            popt_in, cov_in = curve_fit(
+                lambda tt, A, phi, offset: sine_fit_func(tt, A, phi, offset, drive_freq),
+                t, V_in, p0=p0_in,
+                bounds=([0, -np.pi, -np.inf], [np.inf, np.pi, np.inf])
+            )
+        except Exception as e:
+            print(f"[{label}] Fit failed for V_in in {base}: {e}")
+            continue
+        A_in, phi_in, offset_in = popt_in
+        sigma_in = np.sqrt(np.diag(cov_in))
+
+        # Compute phase difference (wrapped into -pi to pi)
+        dphi = phi_acc - phi_in
+        dphi = np.arctan2(np.sin(dphi), np.cos(dphi))
+        # Propagate errors: sigma(dphi) = sqrt(sigma(phi_acc)^2 + sigma(phi_in)^2)
+        sigma_phi_acc = sigma_acc[1]
+        sigma_phi_in  = sigma_in[1]
+        phase_err = np.sqrt(sigma_phi_acc**2 + sigma_phi_in**2)
+
+        # Amplitude ratio and its error propagation:
+        ratio = A_acc / A_in
+        sigma_A_acc = sigma_acc[0]
+        sigma_A_in  = sigma_in[0]
+        ratio_err = np.sqrt( (sigma_A_acc / A_in)**2 + ((A_acc * sigma_A_in) / (A_in**2))**2 )
+
+        freqs_meas.append(drive_freq)
+        phases_meas.append(dphi)
+        amplitude_ratios.append(ratio)
+        a_acc_vals.append(A_acc)
+        a_in_vals.append(A_in)
+        phase_err_list.append(phase_err)
+        ratio_err_list.append(ratio_err)
+
+    # Convert to arrays and sort
+    freqs_meas       = np.array(freqs_meas)
+    phases_meas      = np.array(phases_meas)
+    amplitude_ratios = np.array(amplitude_ratios)
+    a_acc_vals       = np.array(a_acc_vals)
+    a_in_vals        = np.array(a_in_vals)
+    phase_err_arr    = np.array(phase_err_list)
+    ratio_err_arr    = np.array(ratio_err_list)
+
+    idx_sort = np.argsort(freqs_meas)
+    freqs_meas       = freqs_meas[idx_sort]
+    phases_meas      = phases_meas[idx_sort]
+    amplitude_ratios = amplitude_ratios[idx_sort]
+    a_acc_vals       = a_acc_vals[idx_sort]
+    a_in_vals        = a_in_vals[idx_sort]
+    phase_err_arr    = phase_err_arr[idx_sort]
+    ratio_err_arr    = ratio_err_arr[idx_sort]
+
+    # Unwrap phase
+    phases_unwrapped = np.unwrap(phases_meas)
+
+    # -----------------------------
+    # Fit Phase vs Frequency
+    # -----------------------------
+    omega_meas = hz_to_rad(freqs_meas)
+    # Adjust initial guesses if needed:
+    p0_phase = [2*np.pi*12, 2*np.pi*1.0, 0.0]
+
+    try:
+        popt_phase, pcov_phase = curve_fit(
+            phase_fit_omega, omega_meas, phases_unwrapped,
+            p0=p0_phase, maxfev=10000
+        )
+        omega0_fit, gamma_fit, phi_offset_fit = popt_phase
+        print("Phase parameters: ", popt_phase)
+        perr_phase = np.sqrt(np.diag(pcov_phase))  # parameter std devs
+
+        # Create smooth fit curve
+        omega_fit = np.linspace(min(omega_meas), max(omega_meas), 300)
+        phase_fit_vals = phase_fit_omega(omega_fit, *popt_phase)
+        freq_fit_phase = omega_fit / (2*np.pi)
+
+        # Residuals
+        phase_model = phase_fit_omega(omega_meas, *popt_phase)
+        phase_resid = phases_unwrapped - phase_model
+        phase_resid_norm = phase_resid / np.std(phase_resid)
+
+        # Quality factor
+        Q_phase = omega0_fit / (2 * gamma_fit)
+
+        print(f"\n[{label}] PHASE FIT RESULTS:")
+        print(f"  omega0 = {omega0_fit:.3f} ± {perr_phase[0]:.3f} rad/s  "
+              f"(f0 = {omega0_fit/(2*np.pi):.3f} Hz)")
+        print(f"  gamma  = {gamma_fit:.3f} ± {perr_phase[1]:.3f} rad/s  "
+              f"(gamma_Hz = {gamma_fit/(2*np.pi):.3f} Hz)")
+        print(f"  phi_offset = {phi_offset_fit:.3f} ± {perr_phase[2]:.3f} rad")
+        print(f"  Q (phase) = {Q_phase:.3f}\n")
+
+        # -----------------------------
+        # Plot Phase + Residuals
+        # -----------------------------
+        fig1, ax1 = plt.subplots(2, 1, figsize=(8, 8), sharex=True)
+        # Add error bars for phase measurement
+        ax1[0].errorbar(freqs_meas, phases_unwrapped, yerr=phase_err_arr,
+                        fmt='bo', label='Measured Phase', capsize=3)
+        ax1[0].plot(freq_fit_phase, phase_fit_vals, 'r--',
+                    label=(f'Fit: ω0={omega0_fit:.2f}±{perr_phase[0]:.2f}, '
+                           f'γ={gamma_fit:.2f}±{perr_phase[1]:.2f}, '
+                           f'offset={phi_offset_fit:.2f}±{perr_phase[2]:.2f}'))
+        ax1[0].set_ylabel('Phase (rad)')
+        ax1[0].grid(True)
+
+        ax1[1].plot(freqs_meas, phase_resid_norm, 'bo')
+        ax1[1].axhline(0, color='k', linewidth=1)
+        ax1[1].set_xlabel('Frequency (Hz)')
+        ax1[1].set_ylabel('Residuals (norm.)')
+        ax1[1].grid(True)
+
+        plt.tight_layout()
+
+        # Save Phase plot
+        phase_plot_name = f"{label.replace(' ', '_')}_phase_fit.png"
+        fig1.savefig(os.path.join(save_dir, phase_plot_name), dpi=300)
+        plt.show()
+
+    except RuntimeError as e:
+        print(f"[{label}] Phase fit failed: {e}")
+
+    # -----------------------------
+    # Fit Amplitude Ratio vs Frequency
+    # -----------------------------
+    try:
+        p0_amp = [max(amplitude_ratios), 12.0, 1.0]
+        popt_amp, pcov_amp = curve_fit(
+            amp_ratio_fit, freqs_meas, amplitude_ratios,
+            p0=p0_amp, bounds=([0,0,0],[np.inf,np.inf,np.inf])
+        )
+        A_fit, f0_fit, gamma_hz_fit = popt_amp
+        gamma_rad_fit = 2 * np.pi * gamma_hz_fit  # Convert Hz to rad/s
+        perr_amp = np.sqrt(np.diag(pcov_amp))
+
+        # Residuals
+        ratio_model = amp_ratio_fit(freqs_meas, *popt_amp)
+        ratio_resid = amplitude_ratios - ratio_model
+        ratio_resid_norm = ratio_resid / np.std(ratio_resid)
+
+        # Smooth curve
+        f_fit = np.linspace(min(freqs_meas), max(freqs_meas), 300)
+        ratio_fit_vals = amp_ratio_fit(f_fit, *popt_amp)
+
+        # Quality factor
+        Q_amp = f0_fit / (2 * gamma_hz_fit)
+
+        print(f"[{label}] AMPLITUDE RATIO FIT RESULTS:")
+        print(f"  A_fit   = {A_fit:.4f} ± {perr_amp[0]:.4f}")
+        print(f"  f0_fit  = {f0_fit:.3f} ± {perr_amp[1]:.3f} Hz")
+        print(f"  gamma_rad = {gamma_rad_fit:.3f} ± {perr_amp[2] * 2 * np.pi:.3f} rad/s")
+        print(f"  Q (amp) = {Q_amp:.3f}\n")
+
+        # -----------------------------
+        # Plot Amplitude Ratio + Residuals
+        # -----------------------------
+        fig2, ax2 = plt.subplots(2, 1, figsize=(8, 8), sharex=True)
+        # Add error bars for amplitude ratio measurement
+        ax2[0].errorbar(freqs_meas, amplitude_ratios, yerr=ratio_err_arr,
+                        fmt='bo', label='Measured Ratio', capsize=3)
+        ax2[0].plot(f_fit, ratio_fit_vals, 'r--',
+                    label=(f'Fit: A={A_fit:.4f}±{perr_amp[0]:.4f}, '
+                           f'f0={f0_fit:.2f}±{perr_amp[1]:.2f} Hz, '
+                           f'γ={gamma_rad_fit:.2f}±{perr_amp[2] * 2 * np.pi:.2f} rad/s'))
+        ax2[0].set_ylabel('Amplitude Ratio (V_acc / V_in)')
+        ax2[0].grid(True)
+
+        ax2[1].plot(freqs_meas, ratio_resid_norm, 'bo')
+        ax2[1].axhline(0, color='k', linewidth=1)
+        ax2[1].set_xlabel('Frequency (Hz)')
+        ax2[1].set_ylabel('Residuals (norm.)')
+        ax2[1].grid(True)
+
+        plt.tight_layout()
+
+        # Save Amplitude Ratio plot
+        amp_plot_name = f"{label.replace(' ', '_')}_amplitude_ratio_fit.png"
+        fig2.savefig(os.path.join(save_dir, amp_plot_name), dpi=300)
+        plt.show()
+
+        # -----------------------------
+        # Fit Amplitude Ratio vs Frequency (Log-Log)
+        # -----------------------------
+        try:
+            # Transform data to logarithmic scale
+            log_amplitude_ratios = np.log(amplitude_ratios)
+            log_ratio_err_arr = ratio_err_arr / amplitude_ratios  # error propagation: σ_log = σ/ratio
+
+            # Define the log of the amplitude ratio fit function:
+            # log(R(f)) = log[ A * (f^2) / sqrt((f0^2 - f^2)**2 + 4*(gamma_hz**2)*(f^2)) ]
+            def amp_ratio_fit_log(f, A, f0, gamma_hz):
+                return np.log( A * (f**2) / np.sqrt((f0**2 - f**2)**2 + 4*(gamma_hz**2)*(f**2)) )
+
+            # Initial parameter guess (same as for the linear fit)
+            p0_amp_log = [max(amplitude_ratios), 12.0, 1.0]
+            popt_amp_log, pcov_amp_log = curve_fit(
+                amp_ratio_fit_log, freqs_meas, log_amplitude_ratios,
+                p0=p0_amp_log, sigma=log_ratio_err_arr, absolute_sigma=True,
+                bounds=([0,0,0],[np.inf, np.inf, np.inf])
+            )
+            A_fit_log, f0_fit_log, gamma_hz_fit_log = popt_amp_log
+            gamma_rad_fit_log = 2 * np.pi * gamma_hz_fit_log
+            perr_amp_log = np.sqrt(np.diag(pcov_amp_log))
+
+            # Compute residuals in log space
+            log_ratio_model = amp_ratio_fit_log(freqs_meas, *popt_amp_log)
+            log_ratio_resid = log_amplitude_ratios - log_ratio_model
+            log_ratio_resid_norm = log_ratio_resid / np.std(log_ratio_resid)
+
+            # Create a smooth fit curve for plotting
+            f_fit_log = np.linspace(min(freqs_meas), max(freqs_meas), 300)
+            ratio_fit_log_vals = np.exp(amp_ratio_fit_log(f_fit_log, *popt_amp_log))
+
+            print(f"[{label}] AMPLITUDE RATIO LOG-LOG FIT RESULTS:")
+            print(f"  A_fit_log   = {A_fit_log:.4f} ± {perr_amp_log[0]:.4f}")
+            print(f"  f0_fit_log  = {f0_fit_log:.3f} ± {perr_amp_log[1]:.3f} Hz")
+            print(f"  gamma_rad_log = {gamma_rad_fit_log:.3f} ± {perr_amp_log[2] * 2 * np.pi:.3f} rad/s")
+            Q_amp_log = f0_fit_log / (2 * gamma_hz_fit_log)
+            print(f"  Q (log-log) = {Q_amp_log:.3f}")
+
+            # Plot the log-log amplitude ratio fit with normalized residuals
+            fig5, ax5 = plt.subplots(2, 1, figsize=(8,8), sharex=True)
+            # Upper panel: log-log amplitude ratio data with fit curve
+            ax5[0].errorbar(freqs_meas, amplitude_ratios, yerr=ratio_err_arr,
+                            fmt='bo', capsize=3, label='Measured Ratio')
+            ax5[0].plot(f_fit_log, ratio_fit_log_vals, 'r--',
+                        label=(f'Fit: A={A_fit_log:.4f}±{perr_amp_log[0]:.4f}, '
+                               f'f0={f0_fit_log:.2f}±{perr_amp_log[1]:.2f} Hz, '
+                               f'γ={gamma_rad_fit_log:.2f}±{perr_amp_log[2] * 2 * np.pi:.2f} rad/s'))
+            ax5[0].set_xscale('log')
+            ax5[0].set_yscale('log')
+            ax5[0].set_ylabel('Amplitude Ratio (V_acc / V_in)')
+            ax5[0].grid(True, which='both', linestyle='--', linewidth=0.5)
+            
+
+            # Lower panel: normalized residuals in log space
+            ax5[1].plot(freqs_meas, log_ratio_resid_norm, 'bo')
+            ax5[1].axhline(0, color='k', linewidth=1)
+            ax5[1].set_xscale('log')
+            ax5[1].set_xlabel('Frequency (Hz)')
+            ax5[1].set_ylabel('Normalized Residuals')
+            ax5[1].grid(True, which='both', linestyle='--', linewidth=0.5)
+
+            plt.tight_layout()
+            # Save the log-log amplitude ratio fit plot
+            loglog_fit_plot_name = f"{label.replace(' ', '_')}_amplitude_ratio_loglog_fit.png"
+            fig5.savefig(os.path.join(save_dir, loglog_fit_plot_name), dpi=300)
+            plt.show()
+
+        except RuntimeError as e:
+            print(f"[{label}] Amplitude ratio log-log fit failed: {e}")
+
+    except RuntimeError as e:
+        print(f"[{label}] Amplitude ratio fit failed: {e}")
+
+def main():
+    data_dir = "/Users/test1/Desktop/Python/Lab 6/Data/Max Damping"
+    analyze_dataset(data_dir, label="Max Damping")
+
+if __name__ == '__main__':
+    main()

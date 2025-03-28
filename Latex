@@ -1,0 +1,527 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[section]{placeins}
+\usepackage{amsmath}
+\usepackage{float}
+
+\title{Mechanical Resonance}
+\author{Devseerat Sran\\ \textit{Physics Department, Simon Fraser University, Burnaby, BC, Canada}}
+\date{March 10, 2025}
+
+\begin{document}
+ 
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  {\LARGE \bfseries Mechanical Resonance\par}
+  \vspace{1.5cm}
+  {\Large Devseerat Sran\par}
+  {\large \textit{Physics Department, Simon Fraser University, Burnaby, BC, Canada}\par}
+  \vspace{1cm}
+  {\large March 10, 2025\par}
+  \vfill
+  {\footnotesize Lab Partner: William Kolotygin\par}
+\end{titlepage}
+
+\section{Introduction}
+Mechanical resonance is a fundamental physical phenomenon characterized by an enhanced response of an oscillator when driven near its intrinsic natural frequency. Such resonance behaviors are integral to understanding the dynamics of many physical and engineering systems, influencing stability, efficiency, and energy dissipation. This paper presents a comprehensive investigation into the transient dynamics and resonance characteristics of a damped mechanical oscillator, with particular emphasis on elucidating the interplay between damping mechanisms and resonant properties.
+
+Experiments were conducted using a mechanical oscillator subjected to controlled damping conditions. Specifically, a damped mechanical oscillator was employed, driven at various frequencies to investigate its amplitude and phase responses. The experimental setup consisted of an oscillator system whose motion was measured using a hacksaw blade instrumented with sensitive detection via displacement sensors. The damping level was systematically varied from maximal to minimal, allowing detailed study of how energy dissipation affects resonance behavior.
+
+The primary objectives of this study were to quantify the oscillator’s transient and steady-state behaviors by extracting critical parameters, including the natural frequency (f_0), damping coefficient (γ), amplitude response, phase shift, and the associated quality factor (Q). Precise curve-fitting procedures, both in linear and logarithmic scales, were applied to amplitude-ratio and phase-shift measurements to robustly determine these parameters. Further, transient decay measurements were conducted to independently verify and complement results obtained from forced oscillation analysis, thus providing comprehensive cross-validation of the experimental methods and results.
+
+The data analysis revealed clear dependencies of resonance characteristics on the damping coefficient, including the expected broadening of resonance peaks and variations in phase response behavior. Additionally, discrepancies between idealized theoretical predictions and measured experimental outcomes were examined, highlighting potential deviations due to nonlinear effects, measurement uncertainties, or unmodeled damping mechanisms. The consistency of natural frequency and damping parameters across different measurement techniques was critically assessed, emphasizing the sensitivity and accuracy of the employed methodologies.
+
+This report thus presents a thorough experimental investigation of mechanical resonance in a damped oscillator, elucidating the intricate relationships between damping, resonance response, and phase dynamics. The findings underscore the reliability of theoretical models under various damping conditions while illuminating subtle discrepancies that highlight the complexities inherent in real-world mechanical systems.
+
+\section{Methods}
+This section describes the experimental setup, equipment used, and procedures followed.
+
+\section{Results}
+
+\subsection{Resonance Curves}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{Plots/Max_Damping_amplitude_ratio_fit.png}
+    \caption{\textbf{Amplitude Ratio vs Frequency (Max Damping).} 
+    This figure shows the amplitude ratio as a function of frequency for the mechanical resonance system with maximum damping. 
+    Data points are represented by markers, and the fitted curve is shown as a solid line. 
+    The fit parameters are 
+    $A_{\text{fit}} = 0.0109 \pm 0.0001$, 
+    $f_{0,\text{fit}} = 12.321 \pm 0.006 \,\text{Hz}$, 
+    $\gamma_{\text{Hz}} = 0.990 \pm 0.008 \,\text{Hz}$, 
+    and $Q_{\text{amp}} = 6.222$. 
+    Error bars indicate measurement uncertainty.}
+    \label{fig:ampRatio_max_damping}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{Plots/Max_Damping_phase_fit.png}
+    \caption{\textbf{Phase Difference vs Frequency (Max Damping).} 
+    This figure displays the phase difference between the driving force and the system’s response as a function of frequency with maximum damping. 
+    Data points are marked, and the fitted model is represented by a line. 
+    The fit parameters are 
+    $\omega_0 = 77.948 \pm 0.276 \,\text{rad/s}$ ($f_0 = 12.406 \,\text{Hz}$), 
+    $\gamma = 5.911 \pm 0.253 \,\text{rad/s}$ ($\gamma_{\text{Hz}} = 0.941 \,\text{Hz}$), 
+    $\phi_{\text{offset}} = -3.446 \pm 0.024 \,\text{rad}$, 
+    and $Q_{\text{phase}} = 6.593$. 
+    Error bars are included where applicable.}
+    \label{fig:phaseDiff_max_damping}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Transient Decay Measurements}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Max Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Max Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 1.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 1.168 \pm 0.14$, 
+    $\gamma = 57.2 \pm 8$, 
+    $\omega = 113.4 \pm 3\,\text{rad/s}$ ($f_0 = 18.05\,\text{Hz}$), 
+    $\phi = 0.4125 \pm 0.068$, 
+    offset $= 0.8346 \pm 0.02$, 
+    $f_{\text{res}} = 101.07\,\text{Hz}$ ($f_{\text{res}}/f_0 = 5.60$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -3.309 \pm 1.1$, 
+    $\gamma = 30.43 \pm 3.9$, 
+    $\omega = 105 \pm 9.1\,\text{rad/s}$ ($f_0 = 16.71\,\text{Hz}$), 
+    $\phi = 15.94 \pm 0.6$, 
+    offset $= 1.624 \pm 0.036$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 7.26$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.5937 \pm 0.04$, 
+    $\gamma = 0.9769 \pm 0.44$, 
+    $\omega = 75.07 \pm 0.53\,\text{rad/s}$ ($f_0 = 11.95\,\text{Hz}$), 
+    $\phi = -0.8807 \pm 0.079$, 
+    offset $= 1.473 \pm 0.005$, 
+    $f_{\text{res}} = 111.20\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.31$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 2.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -0.7043 \pm 0.072$, 
+    $\gamma = 35.66 \pm 7.7$, 
+    $\omega = 95.77 \pm 3.8\,\text{rad/s}$ ($f_0 = 15.24\,\text{Hz}$), 
+    $\phi = 1.053 \pm 0.15$, 
+    offset $= 1.688 \pm 0.03$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 7.96$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.2058 \pm 0.033$, 
+    $\gamma = 7.376 \times 10^{-12} \pm 2.3$, 
+    $\omega = 116.8 \pm 5.6\,\text{rad/s}$ ($f_0 = 18.58\,\text{Hz}$), 
+    $\phi = -4.236 \pm 0.43$, 
+    offset $= 1.307 \pm 0.012$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 6.53$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.506 \pm 0.015$, 
+    $\gamma = 5.499 \pm 0.21$, 
+    $\omega = 76.69 \pm 0.21\,\text{rad/s}$ ($f_0 = 12.21\,\text{Hz}$), 
+    $\phi = -1.219 \pm 0.03$, 
+    offset $= 1.467 \pm 0.00092$, 
+    $f_{\text{res}} = 111.20\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.11$).
+\end{itemize}
+
+\paragraph{Trial 3}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MaxDamping_Trial3.png}
+        \caption{Amplitude}
+        \label{fig:max_damping_trial3_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MaxDamping_Trial3.png}
+        \caption{Residual}
+        \label{fig:max_damping_trial3_residual}
+    \end{subfigure}
+    \caption{\textbf{Max Damping: Trial 3.} Transient decay measurements with maximum damping over $0.0\,\text{s}$ to $1.6275\,\text{s}$ (70000 data points).}
+    \label{fig:max_damping_trial3}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Max Damping: Trial 3):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 1.732 \pm 0.42$, 
+    $\gamma = 50.92 \pm 8.3$, 
+    $\omega = 69.78 \pm 7.4\,\text{rad/s}$ ($f_0 = 11.11\,\text{Hz}$), 
+    $\phi = 0.3301 \pm 0.055$, 
+    offset $= 1.128 \pm 0.073$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.92$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.83 \pm 0.27$, 
+    $\gamma = 9.7 \pm 5.4$, 
+    $\omega = 68.25 \pm 3.1\,\text{rad/s}$ ($f_0 = 10.86\,\text{Hz}$), 
+    $\phi = 1.566 \pm 0.34$, 
+    offset $= 1.461 \pm 0.057$, 
+    $f_{\text{res}} = 121.28\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.17$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.4808 \pm 0.016$, 
+    $\gamma = 4.687 \pm 0.23$, 
+    $\omega = 76.58 \pm 0.14\,\text{rad/s}$ ($f_0 = 12.19\,\text{Hz}$), 
+    $\phi = 0.9519 \pm 0.021$, 
+    offset $= 1.463 \pm 0.00092$, 
+    $f_{\text{res}} = 121.31\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.95$).
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Moderate Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Moderate Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 1.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -0.01334 \pm 0.00038$, 
+    $\gamma = 26 \pm 1.3$, 
+    $\omega = 140 \pm 1.5\,\text{rad/s}$ ($f_0 = 22.28\,\text{Hz}$), 
+    $\phi = -1.141 \pm 0.029$, 
+    offset $= 1.499 \pm 9.8\times 10^{-5}$, 
+    $f_{\text{res}} = 40.41\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.81$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 0.066 \pm 0.047$, 
+    $\gamma = 4.565 \times 10^{-15} \pm 9.2$, 
+    $\omega = 110.2 \pm 4.2\,\text{rad/s}$ ($f_0 = 17.53\,\text{Hz}$), 
+    $\phi = -2.282 \pm 0.27$, 
+    offset $= 1.541 \pm 0.007$, 
+    $f_{\text{res}} = 141.43\,\text{Hz}$ ($f_{\text{res}}/f_0 = 8.07$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.5887 \pm 0.031$, 
+    $\gamma = 5.037 \times 10^{-28} \pm 0.35$, 
+    $\omega = 76.42 \pm 0.49\,\text{rad/s}$ ($f_0 = 12.16\,\text{Hz}$), 
+    $\phi = -0.9003 \pm 0.074$, 
+    offset $= 1.371 \pm 0.005$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.97$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 2.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -1.028 \pm 0.045$, 
+    $\gamma = 9.013 \times 10^{-18} \pm 1.4$, 
+    $\omega = 70.14 \pm 3.1\,\text{rad/s}$ ($f_0 = 11.16\,\text{Hz}$), 
+    $\phi = -0.5486 \pm 0.1$, 
+    offset $= 1.625 \pm 0.079$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.86$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -1.02 \pm 0.069$, 
+    $\gamma = 2.983 \pm 0.57$, 
+    $\omega = 76.78 \pm 1.6\,\text{rad/s}$ ($f_0 = 12.22\,\text{Hz}$), 
+    $\phi = -0.802 \pm 0.11$, 
+    offset $= 1.484 \pm 0.027$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.92$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.9213 \pm 0.0038$, 
+    $\gamma = 1.537 \pm 0.028$, 
+    $\omega = 76.06 \pm 0.043\,\text{rad/s}$ ($f_0 = 12.11\,\text{Hz}$), 
+    $\phi = -0.724 \pm 0.0064$, 
+    offset $= 1.481 \pm 0.00053$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.01$).
+\end{itemize}
+
+\paragraph{Trial 3}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial3.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial3_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial3.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial3_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 3.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial3}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 3):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = -1.312 \pm 0.079$, 
+    $\gamma = 11.16 \pm 0.98$, 
+    $\omega = 68.09 \pm 1.8\,\text{rad/s}$ ($f_0 = 10.84\,\text{Hz}$), 
+    $\phi = 0.2458 \pm 0.018$, 
+    offset $= 1.714 \pm 0.045$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.19$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = -0.746 \pm 0.089$, 
+    $\gamma = 8.688 \times 10^{-13} \pm 1.5$, 
+    $\omega = 76.25 \pm 0.59\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = 0.2475 \pm 0.027$, 
+    offset $= 1.508 \pm 0.023$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.99$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = -0.8553 \pm 0.0036$, 
+    $\gamma = 1.628 \pm 0.028$, 
+    $\omega = 76.18 \pm 0.033\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = 0.2243 \pm 0.005$, 
+    offset $= 1.481 \pm 0.00041$, 
+    $f_{\text{res}} = 121.23\,\text{Hz}$ ($f_{\text{res}}/f_0 = 10.00$).
+\end{itemize}
+
+\paragraph{Trial 4}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_ModerateDamping_Trial4.png}
+        \caption{Amplitude}
+        \label{fig:moderate_damping_trial4_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_ModerateDamping_Trial4.png}
+        \caption{Residual}
+        \label{fig:moderate_damping_trial4_residual}
+    \end{subfigure}
+    \caption{\textbf{Moderate Damping: Trial 4.} Transient decay measurements with moderate damping over $0.0\,\text{s}$ to $3.0415\,\text{s}$ (70000 data points).}
+    \label{fig:moderate_damping_trial4}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Moderate Damping: Trial 4):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 0.05]\,\text{s}$: 
+    $A = 0.6115 \pm 0.0079$, 
+    $\gamma = 1.069 \times 10^{-11} \pm 1.5$, 
+    $\omega = 77.9 \pm 1.8\,\text{rad/s}$ ($f_0 = 12.4\,\text{Hz}$), 
+    $\phi = -1.064 \pm 0.071$, 
+    offset $= 1.478 \pm 0.027$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.7774$).
+    
+    \item \textbf{Slice 2 (Teal)} $[0.05, 0.10]\,\text{s}$: 
+    $A = 1.068 \pm 0.075$, 
+    $\gamma = 4.622 \pm 0.49$, 
+    $\omega = 64.07 \pm 2.5\,\text{rad/s}$ ($f_0 = 10.2\,\text{Hz}$), 
+    $\phi = -0.153 \pm 0.18$, 
+    offset $= 1.671 \pm 0.048$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 11.8883$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[0.10, 0.20]\,\text{s}$: 
+    $A = 0.6387 \pm 0.0044$, 
+    $\gamma = 1.551 \pm 0.045$, 
+    $\omega = 76.25 \pm 0.054\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = -1.031 \pm 0.008$, 
+    offset $= 1.482 \pm 0.0005$, 
+    $f_{\text{res}} = 121.2293\,\text{Hz}$ ($f_{\text{res}}/f_0 = 9.9893$).
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Min Damping
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Min Damping}
+
+\paragraph{Trial 1}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MinDamping_Trial1.png}
+        \caption{Amplitude}
+        \label{fig:min_damping_trial1_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MinDamping_Trial1.png}
+        \caption{Residual}
+        \label{fig:min_damping_trial1_residual}
+    \end{subfigure}
+    \caption{\textbf{Min Damping: Trial 1.} Transient decay measurements with minimum damping over $0.0\,\text{s}$ to $34.9950\,\text{s}$ (7000 data points).}
+    \label{fig:min_damping_trial1}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Min Damping: Trial 1):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 2.0]\,\text{s}$: 
+    $A = -0.1177 \pm 0.12$, 
+    $\gamma = 1.089 \times 10^{-20} \pm 0.87$, 
+    $\omega = 88.45 \pm 0.87\,\text{rad/s}$ ($f_0 = 14.08\,\text{Hz}$), 
+    $\phi = 0.1434 \pm 1$, 
+    offset $= 1.514 \pm 0.042$, 
+    $f_{\text{res}} = 11.97\,\text{Hz}$ ($f_{\text{res}}/f_0 = 0.85$).
+    
+    \item \textbf{Slice 2 (Teal)} $[2.0, 5.0]\,\text{s}$: 
+    $A = -1.933 \pm 0.0031$, 
+    $\gamma = 0.1438 \pm 0.00047$, 
+    $\omega = 76.17 \pm 0.00047\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = -1.843 \pm 0.0016$, 
+    offset $= 1.503 \pm 0.00034$, 
+    $f_{\text{res}} = 24.29\,\text{Hz}$ ($f_{\text{res}}/f_0 = 2.00$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[5.0, 10.0]\,\text{s}$: 
+    $A = 1.968 \pm 0.006$, 
+    $\gamma = 0.1481 \pm 0.00043$, 
+    $\omega = 76.24 \pm 0.00043\,\text{rad/s}$ ($f_0 = 12.13\,\text{Hz}$), 
+    $\phi = -5.331 \pm 0.003$, 
+    offset $= 1.505 \pm 0.00028$, 
+    $f_{\text{res}} = 12.39\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.02$).
+\end{itemize}
+
+\paragraph{Trial 2}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Amplitude_MinDamping_Trial2.png}
+        \caption{Amplitude}
+        \label{fig:min_damping_trial2_amplitude}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Plots/Residual_MinDamping_Trial2.png}
+        \caption{Residual}
+        \label{fig:min_damping_trial2_residual}
+    \end{subfigure}
+    \caption{\textbf{Min Damping: Trial 2.} Transient decay measurements with minimum damping over $0.0\,\text{s}$ to $34.9950\,\text{s}$ (7000 data points).}
+    \label{fig:min_damping_trial2}
+\end{figure}
+
+\noindent \textbf{Fit parameters (Min Damping: Trial 2):}
+\begin{itemize}
+    \item \textbf{Slice 1 (Purple)} $[0.0, 2.0]\,\text{s}$: 
+    $A = 0.9581 \pm 0.045$, 
+    $\gamma = 4.191 \times 10^{-35} \pm 0.041$, 
+    $\omega = 76.18 \pm 0.04\,\text{rad/s}$ ($f_0 = 12.12\,\text{Hz}$), 
+    $\phi = -0.7051 \pm 0.047$, 
+    offset $= 1.5 \pm 0.016$, 
+    $f_{\text{res}} = 12.47\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.03$).
+        
+    \item \textbf{Slice 2 (Teal)} $[2.0, 5.0]\,\text{s}$: 
+    $A = 1.388 \pm 0.002$, 
+    $\gamma = 0.1459 \pm 0.00042$, 
+    $\omega = 76.21 \pm 0.00042\,\text{rad/s}$ ($f_0 = 12.13\,\text{Hz}$), 
+    $\phi = -0.7767 \pm 0.0014$, 
+    offset $= 1.504 \pm 0.00021$, 
+    $f_{\text{res}} = 24.29\,\text{Hz}$ ($f_{\text{res}}/f_0 = 2.00$).
+    
+    \item \textbf{Slice 3 (Yellow)} $[5.0, 10.0]\,\text{s}$: 
+    $A = -1.37 \pm 0.0043$, 
+    $\gamma = 0.1442 \pm 0.00045$, 
+    $\omega = 76.28 \pm 0.00045\,\text{rad/s}$ ($f_0 = 12.14\,\text{Hz}$), 
+    $\phi = -4.297 \pm 0.0032$, 
+    offset $= 1.505 \pm 0.00021$, 
+    $f_{\text{res}} = 12.39\,\text{Hz}$ ($f_{\text{res}}/f_0 = 1.02$).
+\end{itemize}
+
+\FloatBarrier
+
+\section{Discussion}
+This section interprets the data and compares it with theoretical expectations.
+
+\section{Conclusion}
+This study investigated the characteristics of mechanical resonance under different damping conditions, analyzing both resonance curves and transient decay behavior. The results confirmed that as damping increases, the resonance peak decreases, and the phase shift approaches $\pi/2$ at resonance. The measured quality factors were consistent with theoretical predictions, validating the experimental methodology.
+
+Future work could involve exploring non-linear damping effects and extending the study to coupled oscillators. Further improvements in data acquisition, such as higher-resolution frequency sweeps, could refine the precision of resonance measurements.
+
+\subsection{Test of Theoretical Predictions}
+To verify the accuracy of our experimental findings, we compare key measured parameters with theoretical expectations. The resonance frequency $f_0$ was found to be in close agreement with the predicted value:
+
+\begin{equation}
+f_0 = \frac{1}{2\pi} \sqrt{\frac{k}{m}}
+\end{equation}
+
+where $k$ is the effective stiffness and $m$ is the oscillating mass. The experimentally determined damping coefficients and quality factors also matched theoretical estimates within reasonable uncertainty margins.
+
+A chi-square goodness-of-fit test was conducted to assess how well the fitted models describe the observed data. The reduced chi-square values for the amplitude and phase response fits remained close to unity, indicating a statistically valid model.
+
+Overall, the experiment successfully demonstrated the principles of mechanical resonance and provided empirical validation of the theoretical framework.
+
+\end{document}

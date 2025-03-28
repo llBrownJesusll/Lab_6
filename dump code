@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import glob
+from scipy.optimize import curve_fit
+
+###############################################################################
+# 1) Model Function
+###############################################################################
+def damped_sine_func(t, A, gamma, omega, phi, offset):
+    """
+    Model for a damped sinusoid:
+      V(t) = A * exp(-gamma * t) * sin(omega * t + phi) + offset
+    """
+    return A * np.exp(-gamma * t) * np.sin(omega * t + phi) + offset
+
+###############################################################################
+# 2) Analyze One Transient File Over Entire Range
+###############################################################################
+def analyze_transient_file_whole_range(
+    file_path,
+    base_freq_guess=12.0,
+    label="MaxDamping",
+    subsample_factor=50
+):
+    """
+    Loads a single transient .lvm file and fits a damped sine model
+    over the entire time range [t[0], t[-1]].
+    
+    Returns (popt, pcov, Q_value).
+    """
+    try:
+        data = np.loadtxt(file_path, delimiter=",")
+    except Exception as e:
+        print(f"[{label}] Error reading {file_path}: {e}")
+        return None, None, None
+
+    # Assume time in col 0, V_acc in col 1
+    t = data[:, 0]
+    V_acc = data[:, 1]
+
+    t_min = t[0]
+    t_max = t[-1]
+    print(f"\n=== Analyzing file: {os.path.basename(file_path)} ({label}) ===")
+    print(f"   Data length: {len(t)} points, time range: {t_min:.4f} s to {t_max:.4f} s")
+
+    # Build an initial guess for the full dataset
+    A_guess = (np.max(V_acc) - np.min(V_acc)) / 2
+    offset_guess = np.mean(V_acc)
+    gamma_guess = 0.1          # rough guess
+    omega_guess = 2 * np.pi * base_freq_guess
+    phi_guess = 0.0
+    p0 = [A_guess, gamma_guess, omega_guess, phi_guess, offset_guess]
+
+    # Perform the curve fit on the entire data
+    try:
+        popt, pcov = curve_fit(damped_sine_func, t, V_acc, p0=p0)
+    except Exception as e:
+        print(f"[{label}] Fit failed over full range: {e}")
+        return None, None, None
+
+    # Extract parameters
+    A_fit, gamma_fit, omega_fit, phi_fit, offset_fit = popt
+    perr = np.sqrt(np.diag(pcov)) if pcov is not None else [0]*5
+
+    # Compute Q
+    Q_value = omega_fit / (2.0 * gamma_fit) if gamma_fit != 0 else np.inf
+    freq_fit = omega_fit / (2*np.pi)
+
+    print(f"  A     = {A_fit:.4g} ± {perr[0]:.2g}")
+    print(f"  gamma = {gamma_fit:.4g} ± {perr[1]:.2g}")
+    print(f"  omega = {omega_fit:.4g} ± {perr[2]:.2g} rad/s -> f0 = {freq_fit:.4g} Hz")
+    print(f"  phi   = {phi_fit:.4g} ± {perr[3]:.2g}")
+    print(f"  offset= {offset_fit:.4g} ± {perr[4]:.2g}")
+    print(f"  --> Q_free = {Q_value:.3f}")
+
+    # Evaluate fit and residuals
+    V_fit = damped_sine_func(t, *popt)
+    residuals = V_acc - V_fit
+
+    # Subsample for plotting
+    subsample_idx = np.arange(0, len(t), subsample_factor)
+    t_sub = t[subsample_idx]
+    V_sub = V_acc[subsample_idx]
+    fit_sub = V_fit[subsample_idx]
+    resid_sub = residuals[subsample_idx]
+
+    # Plot data + fit + residuals
+    fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+    axs[0].plot(t_sub, V_sub, 'bo', label='Data (subsampled)')
+    axs[0].plot(t, V_fit, 'r-', label='Fit')
+    axs[0].set_ylabel("Amplitude")
+    axs[0].set_title(f"{label} - Single Fit: Q_free={Q_value:.3f}")
+    axs[0].legend()
+    axs[0].grid(True)
+
+    axs[1].plot(t_sub, resid_sub, 'k.', label='Residual')
+    axs[1].axhline(0, color='gray', linestyle='--')
+    axs[1].set_xlabel("Time (s)")
+    axs[1].set_ylabel("Residual")
+    axs[1].grid(True)
+
+    plt.tight_layout()
+    save_dir = "/Users/test1/Desktop/Python/Lab 6/Plots"
+    os.makedirs(save_dir, exist_ok=True)
+    outname = f"{label}_WHOLE_{os.path.basename(file_path).replace('.lvm','')}.png"
+    outpath = os.path.join(save_dir, outname)
+    plt.savefig(outpath)
+    plt.show()
+    print(f"  Plot saved to: {outpath}")
+
+    return popt, pcov, Q_value
+
+###############################################################################
+# 3) Main
+###############################################################################
+def main():
+    """
+    Example usage: 
+      - Three directories: Max, Moderate, Min damping
+      - Each directory has multiple .lvm files, e.g.:
+         MaxDamping_Trial1.lvm, etc.
+      - We do a SINGLE FIT on the entire time range for each file,
+        extracting one Q from each dataset.
+    """
+
+    # Directories for each damping level 
+    data_dirs = [
+        ("/Users/test1/Desktop/Python/Lab 6/Data/Transients/MaxDamping (Samples-70k,Rate-43k)", "MaxDamping"),
+        ("Data/Transients/ModerateDamping (Samples-43k,Rate-70k)", "ModerateDamping"),
+        ("Data/Transients/MinDamping (Samples-7k, Rate-200)", "MinDamping")
+    ]
+
+    # Base frequency guess (Hz)
+    base_freq_guess = 12.0
+
+    # Subsampling factor for plotting
+    subsample_factor = 50 
+
+    # Loop over each damping directory
+    for (dpath, dlabel) in data_dirs:
+        if not os.path.isdir(dpath):
+            print(f"\n*** Directory not found: {dpath}. Skipping. ***\n")
+            continue
+
+        # Grab all .lvm files for this damping condition
+        pattern = os.path.join(dpath, f"{dlabel}_Trial*.lvm")
+        file_list = sorted(glob.glob(pattern))
+        if not file_list:
+            print(f"No files found matching {pattern}")
+            continue
+
+        print(f"\n=== Analyzing {dlabel} (Single-Fit Approach) ===")
+
+        # Analyze each file, full range
+        for file_path in file_list:
+            popt, pcov, Q_value = analyze_transient_file_whole_range(
+                file_path=file_path,
+                base_freq_guess=base_freq_guess,
+                label=dlabel,
+                subsample_factor=subsample_factor
+            )
+           
+
+if __name__ == "__main__":
+    main()
